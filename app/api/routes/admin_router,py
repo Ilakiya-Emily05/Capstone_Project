@@ -1,0 +1,19 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.models.account import Account
+from app.models.loan import Loan
+from app.dependencies import role_required
+from app.core.database import get_db
+
+router = APIRouter(prefix="/admin", tags=["Admin"])
+
+@router.get("/reports")
+def admin_report(db: Session = Depends(get_db), admin=Depends(role_required("ADMIN"))):
+    total_accounts = db.query(Account).count()
+    total_loans = db.query(Loan).count()
+    total_loan_volume = db.query(Loan).with_entities(func.sum(Loan.amount)).scalar() or 0
+    return {
+        "total_accounts": total_accounts,
+        "total_loans": total_loans,
+        "total_loan_volume": total_loan_volume
+    }

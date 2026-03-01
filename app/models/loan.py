@@ -1,8 +1,14 @@
 import uuid
-from sqlalchemy import Column, Float, String, ForeignKey
+from sqlalchemy import Column, String, Float, Enum, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from .base import Base
+from datetime import datetime
+from enum import Enum as PyEnum
+from app.models.base import Base
+
+class LoanStatus(PyEnum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
 
 class Loan(Base):
     __tablename__ = "loans"
@@ -10,6 +16,7 @@ class Loan(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     amount = Column(Float, nullable=False)
-    status = Column(String, default="pending", nullable=False)
-
-    user = relationship("User", back_populates="loans")
+    interest_rate = Column(Float, default=0.05)
+    status = Column(Enum(LoanStatus), default=LoanStatus.PENDING)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    approved_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)

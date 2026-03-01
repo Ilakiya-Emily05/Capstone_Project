@@ -1,23 +1,22 @@
-from pydantic import BaseModel
-from typing import Optional
+import uuid
+from sqlalchemy import Column, String, Float, Enum, ForeignKey, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
+from enum import Enum as PyEnum
+from app.models.base import Base
 
-class LoanBase(BaseModel):
-    amount: float
-    interest_rate: float
-    duration_months: int
-    status: str = "pending"
+class LoanStatus(PyEnum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
 
-class LoanCreate(LoanBase):
-    user_id: int
+class Loan(Base):
+    __tablename__ = "loans"
 
-class LoanUpdate(BaseModel):
-    status: Optional[str] = None
-
-class LoanResponse(LoanBase):
-    id: int
-    user_id: int
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    amount = Column(Float, nullable=False)
+    interest_rate = Column(Float, default=0.05)
+    status = Column(Enum(LoanStatus), default=LoanStatus.PENDING)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    approved_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
