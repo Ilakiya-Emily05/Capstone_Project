@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: capstone_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin@123
+      POSTGRES_DB: capstoneproject
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - capstone_network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    env_file: .env
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    networks:
+      - capstone_network
+
+  account-service:
+    build: ./account-service
+    container_name: account_service
+    env_file: .env
+    ports:
+      - "8002:8000"
+    depends_on:
+      - db
+    networks:
+      - capstone_network
+
+  transaction-service:
+    build: ./transaction-service
+    container_name: transaction_service
+    env_file: .env
+    ports:
+      - "8003:8000"
+    depends_on:
+      - db
+    networks:
+      - capstone_network
+
+  loan-service:
+    build: ./loan-service
+    container_name: loan_service
+    env_file: .env
+    ports:
+      - "8004:8000"
+    depends_on:
+      - db
+    networks:
+      - capstone_network
+
+  reporting-service:
+    build: ./reporting-service
+    container_name: reporting_service
+    env_file: .env
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+    networks:
+      - capstone_network
+
+networks:
+  capstone_network:
+
+volumes:
+  db_data:
