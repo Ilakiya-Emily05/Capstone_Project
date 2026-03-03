@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+passlib[bcrypt]
+jose
+httpx
+pyotp
+qrcode[pil]
+redis
+cryptography
+prometheus-client
+slowapi
