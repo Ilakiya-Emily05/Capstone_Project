@@ -8,6 +8,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: digital-banking-api
+
     steps:
       - uses: actions/checkout@v3
 
@@ -17,11 +21,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd api-gateway
           pip install -r requirements.txt
           pip install pytest
 
       - name: Run tests
-        run: |
-          cd api-gateway
-          pytest
+        run: pytest
